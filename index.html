@@ -621,7 +621,7 @@
                         <p class="mb-1 text-white"><b>Target: ${highlightKeywords(wealthEl)}</b></p>
                         <p class="text-sm text-stone-400 mb-2">${highlightKeywords(ELEMENT_WEALTH_ADVICE[wealthEl])}</p>
                         <p class="text-xs text-amber-500/80 mt-2 italic">
-                            ${counts[wealthEl] > 0 ? "✅ You have this asset naturally. Use it!" : "💡 <b>Strategy:</b> This is weak in your chart. Intentionally seek this element to boost income."}
+                            ${counts[wealthEl] > 0 ? "✅ You have this asset naturally. Use it!" : "💡 <b>Strategy:</b> This is weak in your profile. Intentionally seek this element to boost income."}
                         </p>
                     </div>
                     <div>
@@ -655,7 +655,7 @@
                     reason = "While you have multiple missing elements, your energy profile is very hot (high Fire). We prioritize Water to cool down your internal temperature and find harmony.";
                 } else if (counts.Water >= 4 && missing.includes("Fire")) {
                     yongSin = "Fire";
-                    reason = "With several missing elements, your chart is currently very cold (high Water). We prioritize Fire to provide essential warmth and vitality.";
+                    reason = "With several missing elements, your profile is currently very cold (high Water). We prioritize Fire to provide essential warmth and vitality.";
                 }
                 // Case: Mediation (Tong-gwan) priority
                 else if (missing.length > 1) {
@@ -693,7 +693,7 @@
                     let candidates = els.filter(el => counts[el] === minCount);
                     yongSin = candidates[0];
                     if (candidates.length > 1) {
-                        reason = `Several elements are equally low in your chart. We selected ${yongSin} as it provides the most foundational support for your core personality type.`;
+                        reason = `Several elements are equally low in your profile. We selected ${yongSin} as it provides the most foundational support for your core personality type.`;
                     } else {
                         reason = `Your energy for ${yongSin} is currently the lowest. Strengthening this specific area will bring the most immediate improvement to your overall balance.`;
                     }
@@ -763,7 +763,7 @@
             const teaData = {
                 Wood: {
                     teas: [
-                        { name: "Green Tea", desc: "Your chart lacks Wood (Growth Energy). Green Tea provides vital antioxidants and fresh energy to jumpstart metabolism and creativity.", query: "Premium+Green+Tea" },
+                        { name: "Green Tea", desc: "Your profile lacks Wood (Growth Energy). Green Tea provides vital antioxidants and fresh energy to jumpstart metabolism and creativity.", query: "Premium+Green+Tea" },
                         { name: "Peppermint Tea", desc: "Deficient Wood can lead to tension. Peppermint naturally relaxes and clears the mind, simulating free-flowing Wood energy.", query: "Organic+Peppermint+Tea" }
                     ],
                     toolQuery: "Bamboo+Tea+Tray+Set"
