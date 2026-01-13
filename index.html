@@ -654,9 +654,10 @@
             const yG = yIdx % 10, yZ = yIdx % 12;
 
             const termDays = [0, 5, 4, 6, 5, 6, 6, 7, 8, 8, 8, 7, 7];
-            let mZ = (d < termDays[m]) ? (m === 1 ? 11 : m) : (m % 12) + 1;
-            if (m === 1 && d >= termDays[1]) mZ = 1; else if (m === 2 && d >= termDays[2]) mZ = 2; else if (d >= termDays[m]) mZ = m;
-            const mG = (((yG % 10 % 5) * 2 + 2 + (mZ + 10) % 12) % 10);
+            // solarIdx: 0=Feb solar month (Tiger), 1=Mar (Rabbit), ..., 11=Jan (Ox)
+            const solarIdx = (d < termDays[m]) ? (m + 9) % 12 : (m + 10) % 12;
+            const mZ = (solarIdx + 2) % 12;
+            const mG = ((yG % 5) * 2 + 2 + solarIdx) % 10;
 
             const dIdx = (Math.floor((new Date(dateStr).getTime() - new Date('1900-01-01').getTime()) / 86400000) + 10) % 60;
             const dG = dIdx % 10, dZ = dIdx % 12;
@@ -680,65 +681,59 @@
             [GAN_EL[yG], ZHI_EL[yZ], GAN_EL[mG], ZHI_EL[mZ], GAN_EL[dG], ZHI_EL[dZ], GAN_EL[hG], ZHI_EL[hZ]].forEach(el => counts[el]++);
             document.getElementById('elementCounts').innerHTML = highlightKeywords(`<span>WOOD: ${counts.Wood}</span><span>FIRE: ${counts.Fire}</span><span>EARTH: ${counts.Earth}</span><span>METAL: ${counts.Metal}</span><span>WATER: ${counts.Water}</span>`);
 
-            // Advanced Yongsin Logic
+            // --- FIXED ADVANCED YONGSIN LOGIC ---
             function calculateAdvancedYongsin(counts) {
-                // 1. Check for Dominant Element (>=4) -> Must Drain (Child)
                 const els = ["Wood", "Fire", "Earth", "Metal", "Water"];
+
+                // 1. Missing Elements Priority (0 Count)
+                let missing = els.filter(el => counts[el] === 0);
+                if (missing.length > 0) {
+                    // Temperature Check: If Fire is strong (>=3), prioritize Water over Metal to cool down.
+                    if (counts.Fire >= 3 && missing.includes("Water")) return "Water";
+                    // If Water is strong (>=3), prioritize Fire to warm up.
+                    if (counts.Water >= 3 && missing.includes("Fire")) return "Fire";
+
+                    // Safety Check Refined: If an element is missing, check if its 'Mother' is already too strong.
+                    // If mother is strong (>=3), don't recommend the mother, recommend the missing element itself.
+                    for (let mEl of missing) {
+                        const attackerMap = { "Wood": "Metal", "Fire": "Water", "Earth": "Wood", "Metal": "Fire", "Water": "Earth" };
+                        const motherMap = { "Wood": "Water", "Fire": "Wood", "Earth": "Fire", "Metal": "Earth", "Water": "Metal" };
+                        const attacker = attackerMap[mEl];
+                        const mother = motherMap[mEl];
+
+                        // If the missing element is attacked by a strong force, AND the bridge(mother) is NOT already strong
+                        if (counts[attacker] >= 3 && counts[mother] < 3) {
+                            return mother;
+                        }
+                    }
+                    // Default to the first missing element
+                    return missing[0];
+                }
+
+                // 2. Excess Management (Dominant Element >= 4) -> Drain it
                 let maxEl = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-
-                // Map of Child elements (To Drain)
                 const childMap = { "Wood": "Fire", "Fire": "Earth", "Earth": "Metal", "Metal": "Water", "Water": "Wood" };
-
                 if (counts[maxEl] >= 4) {
                     return childMap[maxEl];
                 }
 
-                // 2. Missing Element (0 Count) - Priority
-                let missing = els.filter(el => counts[el] === 0);
-                if (missing.length > 0) {
-                    for (let mEl of missing) {
-                        // Safety Check: Is it attacked by a Strong Element (>=3)?
-                        const attackerMap = { "Wood": "Metal", "Fire": "Water", "Earth": "Wood", "Metal": "Fire", "Water": "Earth" };
-                        const attacker = attackerMap[mEl];
-
-                        // If Attacker is Strong (>=3), recommend Bridge (Mother) instead.
-                        if (counts[attacker] >= 3) {
-                            const motherMap = { "Wood": "Water", "Fire": "Wood", "Earth": "Fire", "Metal": "Earth", "Water": "Metal" };
-                            return motherMap[mEl];
-                        }
-                    }
-                    return missing[0];
-                }
-
-                // 3. Tong-gwan (Bridge) Logic for Clashes (Attacker >= 3 vs Victim <= 1)
-                // Metal vs Wood -> Water
+                // 3. Tong-gwan (Bridge) Logic for Clashes in present elements
                 if (counts.Metal >= 3 && counts.Wood <= 1) return "Water";
-                // Water vs Fire -> Wood
                 if (counts.Water >= 3 && counts.Fire <= 1) return "Wood";
-                // Wood vs Earth -> Fire
                 if (counts.Wood >= 3 && counts.Earth <= 1) return "Fire";
-                // Fire vs Metal -> Earth
                 if (counts.Fire >= 3 && counts.Metal <= 1) return "Earth";
-                // Earth vs Water -> Metal
                 if (counts.Earth >= 3 && counts.Water <= 1) return "Metal";
 
-                // 4. Fallback: Simplest Deficiency (Standard Balance)
-                // Find all elements with the minimum count
+                // 4. Fallback: Simplest Deficiency
                 let minCount = Math.min(...Object.values(counts));
                 let candidates = els.filter(el => counts[el] === minCount);
-
-                // Tie-breaker: If mixed, prioritize 'Water' or 'Fire' for temperature balance (Jo-hoo), 
-                // but for simplicity, return the first one found or random. 
-                // Using first one ensures deterministic result.
                 return candidates[0];
             }
 
             let yongSin = calculateAdvancedYongsin(counts);
 
             // --- Dynamic Theme Coloring ---
-            // Reset common bg classes
             resultArea.className = "mt-8 w-full animate-in fade-in zoom-in duration-500 rounded-[50px] p-8 md:p-12 text-white relative shadow-2xl overflow-hidden min-h-[600px] flex flex-col justify-center transform transition-colors duration-1000";
-            // Apply new dynamic class
             resultArea.classList.add(THEME_COLORS[yongSin].bg);
 
             const amazonTag = "ricecakeusa-20";
@@ -800,7 +795,6 @@
             document.getElementById('toolLink').href = `https://www.amazon.com/s?k=${result.toolQuery}&tag=${amazonTag}`;
             document.getElementById('toolLink').innerText = `Shop ${yongSin} Ritual Tools →`;
 
-            const dstMsg = applyCorrection ? " w/ DST Correction" : "";
             document.getElementById('analysisDesc').innerHTML = `Your energy profile shows a need for <b class="${THEME_COLORS[yongSin].accent}">${yongSin}</b>. We have selected teas and colors to fill this gap and restore harmony.`;
 
             // --- Enable General Analysis ---
