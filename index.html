@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saju Tea Therapy | Precise 8-Pillars</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfcf9; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .pillar-card { background: white; border-radius: 12px; padding: 15px 5px; border: 1px solid #e5e7eb; }
+        .highlight { border: 2px solid #065f46; background-color: #f0fdf4; }
+        .btn-active { background-color: #065f46; color: white; border-color: #065f46; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <div class="flex-grow max-w-xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="serif text-4xl text-emerald-950 uppercase tracking-tight">Saju Tea Therapy</h1>
+            <p class="text-gray-500 mt-2 italic text-sm">Balanced Energy through the 8-Pillars.</p>
+        </header>
+
+        <!-- Input Section -->
+        <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Gender</label>
+                    <div class="flex gap-4">
+                        <button onclick="setGender('Male')" id="btnMale" class="flex-1 py-3 border rounded-xl font-semibold transition btn-active">Male</button>
+                        <button onclick="setGender('Female')" id="btnFemale" class="flex-1 py-3 border rounded-xl font-semibold transition">Female</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Birth Date</label><input type="date" id="date" class="w-full border-b-2 py-2 outline-none focus:border-emerald-800 transition"></div>
+                    <div><label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Birth Time</label><input type="time" id="time" class="w-full border-b-2 py-2 outline-none focus:border-emerald-800 transition"></div>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="koreaTime" class="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                    <label for="koreaTime" class="ml-2 text-xs text-gray-500 font-medium">Born in Korea? (Apply -30min correction)</label>
+                </div>
+                <button onclick="calculate()" class="w-full bg-emerald-950 text-white py-4 rounded-2xl font-bold hover:bg-emerald-800 transition shadow-lg">Analyze My Energy</button>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultArea" class="hidden animate-in fade-in duration-700">
+            <div class="grid grid-cols-4 gap-2 mb-8 text-center text-xs">
+                <div class="pillar-card"><p class="text-[9px] text-gray-400 font-bold mb-1 uppercase tracking-tighter">Year</p><div id="yP" class="font-bold"></div></div>
+                <div class="pillar-card"><p class="text-[9px] text-gray-400 font-bold mb-1 uppercase tracking-tighter">Month</p><div id="mP" class="font-bold"></div></div>
+                <div class="pillar-card highlight"><p class="text-[9px] text-emerald-700 font-bold mb-1 uppercase tracking-tighter">Day</p><div id="dP" class="font-bold text-emerald-900"></div></div>
+                <div class="pillar-card"><p class="text-[9px] text-gray-400 font-bold mb-1 uppercase tracking-tighter">Hour</p><div id="hP" class="font-bold"></div></div>
+            </div>
+
+            <div class="bg-emerald-950 text-white rounded-[40px] p-8 text-center shadow-2xl">
+                <div id="targetElement" class="serif text-5xl mb-6 text-emerald-300"></div>
+                <div class="bg-white/5 rounded-2xl p-6 mb-8 text-sm leading-relaxed text-left border border-white/10">
+                    <p id="analysisDesc" class="text-emerald-50 mb-4"></p>
+                    <div id="elementCounts" class="flex justify-around text-[9px] font-bold tracking-tighter border-t border-white/10 pt-4 text-emerald-400"></div>
+                </div>
+                <div class="pt-2">
+                    <p class="text-emerald-400 text-[10px] font-bold uppercase mb-2 tracking-widest">Recommended Amazon Tea</p>
+                    <h3 id="teaName" class="serif text-3xl mb-3"></h3>
+                    <p id="teaDesc" class="text-emerald-100/60 italic text-sm mb-6"></p>
+                    <a id="amazonLink" target="_blank" class="inline-block bg-white text-emerald-950 px-6 py-3 rounded-full font-bold text-sm hover:bg-emerald-100 transition shadow-md">Shop on Amazon →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Area -->
+    <footer class="text-center py-8 text-gray-400 border-t border-gray-100">
+        <p class="text-xs uppercase tracking-widest font-semibold">Created by Dr. Byungjoo Park</p>
+    </footer>
+
+    <script>
+        let gender = "Male";
+        const GAN = ["갑(甲)", "을(을)", "병(丙)", "정(丁)", "무(戊)", "기(기)", "경(庚)", "신(辛)", "임(壬)", "계(癸)"];
+        const ZHI = ["자(子)", "축(丑)", "인(寅)", "묘(卯)", "진(진)", "사(巳)", "오(午)", "미(미)", "신(申)", "유(酉)", "술(술)", "해(해)"];
+        const GAN_EL = ["Wood", "Wood", "Fire", "Fire", "Earth", "Earth", "Metal", "Metal", "Water", "Water"];
+        const ZHI_EL = ["Water", "Earth", "Wood", "Wood", "Earth", "Fire", "Fire", "Earth", "Metal", "Metal", "Earth", "Water"];
+
+        function setGender(g) {
+            gender = g;
+            document.getElementById('btnMale').className = g === 'Male' ? 'flex-1 py-3 border rounded-xl font-semibold btn-active' : 'flex-1 py-3 border rounded-xl font-semibold';
+            document.getElementById('btnFemale').className = g === 'Female' ? 'flex-1 py-3 border rounded-xl font-semibold btn-active' : 'flex-1 py-3 border rounded-xl font-semibold';
+        }
+
+        function calculate() {
+            const dateStr = document.getElementById('date').value;
+            const timeStr = document.getElementById('time').value;
+            const applyCorrection = document.getElementById('koreaTime').checked;
+            if(!dateStr || !timeStr) return;
+
+            let [hour, min] = timeStr.split(':').map(Number);
+            if(applyCorrection) {
+                min -= 30;
+                if(min < 0) { min += 60; hour -= 1; }
+                if(hour < 0) hour += 24;
+            }
+
+            const birth = new Date(dateStr);
+            const y = birth.getFullYear(), m = birth.getMonth() + 1, d = birth.getDate();
+
+            let yIdx = (y - 4) % 60;
+            if (m < 2 || (m === 2 && d < 4)) yIdx--;
+            const yG = yIdx % 10, yZ = yIdx % 12;
+
+            const termDays = [0, 5, 4, 6, 5, 6, 6, 7, 8, 8, 8, 7, 7];
+            let mZ = (d < termDays[m]) ? (m === 1 ? 11 : m) : (m % 12) + 1;
+            if(m===1 && d>=termDays[1]) mZ = 1; else if(m===2 && d>=termDays[2]) mZ = 2; else if(d>=termDays[m]) mZ = m;
+            const mG = (((yG % 10 % 5) * 2 + 2 + (mZ + 10) % 12) % 10);
+
+            const dIdx = (Math.floor((new Date(dateStr).getTime() - new Date('1900-01-01').getTime()) / 86400000) + 10) % 60;
+            const dG = dIdx % 10, dZ = dIdx % 12;
+
+            const hZ = Math.floor(((hour + 1) % 24) / 2);
+            const hG = (((dG % 5) * 2 + hZ) % 10);
+
+            document.getElementById('yP').innerText = GAN[yG] + ZHI[yZ];
+            document.getElementById('mP').innerText = GAN[mG] + ZHI[mZ];
+            document.getElementById('dP').innerText = GAN[dG] + ZHI[dZ];
+            document.getElementById('hP').innerText = GAN[hG] + ZHI[hZ];
+            document.getElementById('resultArea').classList.remove('hidden');
+
+            const counts = { Wood: 0, Fire: 0, Earth: 0, Metal: 0, Water: 0 };
+            [GAN_EL[yG], ZHI_EL[yZ], GAN_EL[mG], ZHI_EL[mZ], GAN_EL[dG], ZHI_EL[dZ], GAN_EL[hG], ZHI_EL[hZ]].forEach(el => counts[el]++);
+            document.getElementById('elementCounts').innerHTML = `<span>WOOD: ${counts.Wood}</span><span>FIRE: ${counts.Fire}</span><span>EARTH: ${counts.Earth}</span><span>METAL: ${counts.Metal}</span><span>WATER: ${counts.Water}</span>`;
+
+            let yongSin = Object.keys(counts).reduce((a, b) => counts[a] < counts[b] ? a : b);
+            if(counts.Wood >= 4) yongSin = (counts.Fire === 0) ? "Fire" : "Metal";
+
+            const teaData = {
+                Wood: { name: "Peppermint Tea", desc: "Refreshing and cooling. Peppermint helps smooth stagnant Wood energy and supports liver flow.", query: "Peppermint+Tea" },
+                Fire: { name: "Hibiscus Tea", desc: "Vibrant and heart-warming. Hibiscus adds the Fire element to improve circulation and vitality.", query: "Hibiscus+Tea" },
+                Earth: { name: "Ginger Turmeric Tea", desc: "Grounded and earthy. This golden blend supports digestion and provides Earth-like stability.", query: "Ginger+Turmeric+Tea" },
+                Metal: { name: "Premium White Tea", desc: "Pure and refined. White tea strengthens the Metal element, helping with focus and clarity.", query: "White+Tea" },
+                Water: { name: "English Breakfast", desc: "Deep and grounding. Rich black tea replenishes your Water energy and inner wisdom.", query: "English+Breakfast+Tea" }
+            };
+
+            const result = teaData[yongSin];
+            document.getElementById('targetElement').innerText = yongSin;
+            document.getElementById('teaName').innerText = result.name;
+            document.getElementById('teaDesc').innerText = result.desc;
+            document.getElementById('amazonLink').href = `https://www.amazon.com/s?k=${result.query}`;
+            document.getElementById('analysisDesc').innerHTML = `As a <b>${gender}</b>, your energy profile has been carefully calculated. ${counts.Wood >= 4 ? "Your 'Wood' energy is very dominant. We recommend <b>Fire</b> to help this intensity flow smoothly into warmth." : `To achieve your elemental harmony, the energy of <b>${yongSin}</b> is most beneficial for you today.`}`;
+
+            window.scrollTo({ top: document.getElementById('resultArea').offsetTop - 20, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
