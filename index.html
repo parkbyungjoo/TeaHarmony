@@ -84,13 +84,24 @@
             /* Hide non-essential sections */
             .no-print,
             header,
-            footer,
             #heroContainer,
             #inputSection,
             button,
             .btn-print-hide {
                 display: none !important;
             }
+
+            footer {
+                background: transparent !important;
+                padding: 0 !important;
+                margin-top: 2rem !important;
+            }
+
+            footer p:first-child {
+                display: none !important;
+            }
+
+            /* Center text hide */
 
             section.bg-stone-50.border-t.border-stone-200.py-24 {
                 display: none !important;
@@ -630,9 +641,18 @@
         </div>
     </section>
 
-    <footer class="bg-stone-900 py-10 text-center">
+    <footer class="bg-stone-900 py-10 text-center no-print-bg">
         <p class="text-[10px] text-stone-500 uppercase tracking-[0.4em]">© 2026 Dr. Byungjoo Park. All Rights Reserved.
         </p>
+        <div class="mt-8 max-w-2xl mx-auto px-6 text-left">
+            <p
+                class="text-[9px] text-stone-600 leading-relaxed uppercase tracking-widest bg-stone-950/30 p-4 rounded-xl border border-white/5">
+                <b>Disclaimer:</b> This analysis is provided for educational and wellness purposes only, based on
+                traditional oriental philosophy. It is not intended to diagnose, treat, cure, or prevent any medical
+                condition. Please consult with a healthcare professional before making changes to your diet or health
+                routine. As an Amazon Associate, we earn from qualifying purchases.
+            </p>
+        </div>
     </footer>
 
     <script>
@@ -975,36 +995,36 @@
             const teaData = {
                 Wood: {
                     teas: [
-                        { name: "Green Tea", desc: "Your profile lacks Wood (Growth Energy). Green Tea provides vital antioxidants and fresh energy to jumpstart metabolism and creativity.", query: "Premium+Green+Tea" },
-                        { name: "Peppermint Tea", desc: "Deficient Wood can lead to tension. Peppermint naturally relaxes and clears the mind, simulating free-flowing Wood energy.", query: "Organic+Peppermint+Tea" }
+                        { name: "Green Tea", desc: "Commonly associated with fresh energy and renewal. Green Tea provides antioxidants and natural vitality to support your creative flow.", query: "Premium+Green+Tea" },
+                        { name: "Peppermint Tea", desc: "Traditionally used to encourage a sense of openness. Peppermint naturally refreshes and clarifies, supporting free-flowing energy.", query: "Organic+Peppermint+Tea" }
                     ],
                     toolQuery: "Bamboo+Tea+Tray+Set"
                 },
                 Fire: {
                     teas: [
-                        { name: "Black Tea (Earl Grey)", desc: "A lack of Fire (Passion Energy) can result in low circulation. Warming Black Tea stimulates the body and heart.", query: "Earl+Grey+Black+Tea" },
-                        { name: "Rooibos Tea", desc: "Missing Fire often means low vitality. Rooibos is rich in minerals, restoring natural warmth and radiance.", query: "Organic+Rooibos+Tea" }
+                        { name: "Black Tea (Earl Grey)", desc: "Traditionally linked to warmth and social radiance. Black Tea provides a gentle stimulation to support an active and passionate spirit.", query: "Earl+Grey+Black+Tea" },
+                        { name: "Rooibos Tea", desc: "Often associated with vitality and internal warmth. Rooibos is caffeine-free and mineral-rich, supporting a steady, glowing energy.", query: "Organic+Rooibos+Tea" }
                     ],
                     toolQuery: "Glass+Teapot+with+Warmer"
                 },
                 Earth: {
                     teas: [
-                        { name: "Chamomile Tea", desc: "Weak Earth energy manifests as digestive issues or worry. Chamomile soothes the gut-brain axis, providing grounding stability.", query: "Organic+Chamomile+Tea" },
-                        { name: "Barley / Corn Silk Tea", desc: "Without Earth (Stability), you may feel ungrounded. These grain-based teas settle the stomach and reinforce your physical center.", query: "Roasted+Barley+Tea" }
+                        { name: "Chamomile Tea", desc: "Often appreciated for its grounding and calming properties. Chamomile supports a sense of stability and inner peace.", query: "Organic+Chamomile+Tea" },
+                        { name: "Barley / Corn Silk Tea", desc: "Traditionally used to support a centered and balanced feeling. These grains provide a comforting, earthy essence to your daily routine.", query: "Roasted+Barley+Tea" }
                     ],
                     toolQuery: "Ceramic+Tea+Mug+Set"
                 },
                 Metal: {
                     teas: [
-                        { name: "Ginger Tea", desc: "A deficiency in Metal (Structure) can weaken the lungs. Ginger's pungency warms the lungs and boosts immunity.", query: "Organic+Ginger+Tea" },
-                        { name: "White Tea", desc: "Lacking Metal energy can make you feel cluttered. White Tea offers pure antioxidants for detoxification and mental clarity.", query: "Premium+White+Tea" }
+                        { name: "Ginger Tea", desc: "Traditionally used for its warming and seasonal support properties. Ginger's spice encourages a clear and structured energy flow.", query: "Organic+Ginger+Tea" },
+                        { name: "White Tea", desc: "Known for its purity and subtle refinement. White Tea offers a gentle way to support clarity and focused energy.", query: "Premium+White+Tea" }
                     ],
                     toolQuery: "White+Porcelain+Tea+Set"
                 },
                 Water: {
                     teas: [
-                        { name: "Black Soybean Tea", desc: "Water energy corresponds to the Kidneys. Black Soybeans replenish vital essence and support natural stamina.", query: "Black+Soybean+Tea" },
-                        { name: "Pu-erh Tea", desc: "Deficient Water energy leads to burnout. Pu-erh supports deep hydration and gut health, restoring wisdom reserves.", query: "Aged+Puerh+Tea" }
+                        { name: "Black Soybean Tea", desc: "Traditionally associated with stamina and longevity. Black Soybeans are used in oriental wisdom to support natural reserves of energy.", query: "Black+Soybean+Tea" },
+                        { name: "Pu-erh Tea", desc: "Appreciated for its deep, aged wisdom and grounding flow. Pu-erh supports a persistent and calm energy profile.", query: "Aged+Puerh+Tea" }
                     ],
                     toolQuery: "Yixing+Clay+Teapot"
                 }
@@ -1045,7 +1065,9 @@
         }
 
         function populatePrintSummary(date, time) {
-            const dateObj = new Date(date);
+            // Use manual split to avoid timezone-related date shifts from UTC parsing
+            const [year, month, day] = date.split('-').map(Number);
+            const dateObj = new Date(year, month - 1, day);
             const formattedDate = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
             // Format time manually to ensure 12-hour format
