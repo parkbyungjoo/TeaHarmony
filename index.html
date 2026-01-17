@@ -63,27 +63,25 @@
             border-color: #065f46;
         }
 
-        /* Print Styles - REFINTED for Clean PDF */
+        /* Print Styles - OPTIMIZED for Page 1 Start & Natural Flow */
         @media print {
             @page {
-                margin: 1.5cm;
+                margin: 1cm;
                 size: auto;
             }
 
-            /* Global Reset */
-            body {
+            /* Force start at top of Page 1 */
+            body,
+            html {
                 background: white !important;
                 color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
-            * {
-                text-shadow: none !important;
-                box-shadow: none !important;
-            }
-
-            /* Hide unwanted elements */
+            /* Hide non-essential sections */
             .no-print,
             header,
             footer,
@@ -94,17 +92,19 @@
                 display: none !important;
             }
 
-            /* Specific Section Hiding */
-            section.bg-stone-50.border-t.border-stone-200.py-24,
-            /* About Dr. Park */
-            .bg-stone-900.py-10.text-center
-
-            /* Footer class check just in case */
-                {
+            section.bg-stone-50.border-t.border-stone-200.py-24 {
                 display: none !important;
             }
 
-            /* Show & Style Content */
+            /* About bio */
+
+            /* Reset main container spacing */
+            .max-w-4xl.mx-auto.-mt-8 {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
+
+            /* Allow natural page breaks for large containers to avoid empty space */
             #printSummary,
             #pillarDisplay,
             #resultArea,
@@ -114,35 +114,36 @@
                 visibility: visible !important;
                 width: 100% !important;
                 margin: 0 !important;
-                padding: 10px 0 !important;
-                page-break-inside: avoid;
-                break-inside: avoid;
+                padding: 5px 0 !important;
+                break-inside: auto !important;
+                page-break-inside: auto !important;
             }
 
-            /* Life Energy Profile (Pillars) */
-            #pillarDisplay {
-                margin-top: 0 !important;
-                margin-bottom: 20px !important;
-                border: none !important;
-                box-shadow: none !important;
+            /* Protect smaller sub-units from splitting */
+            .pillar-card,
+            .bg-white\/10.backdrop-blur-md,
+            .bg-stone-900\/50,
+            .bg-gradient-to-br {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                margin-bottom: 10px !important;
+                border: 1px solid #eee !important;
+                background: white !important;
+                color: black !important;
             }
 
-            .pillar-card {
-                border: 1px solid #ccc !important;
-            }
-
-            /* Balancing Element Area (Result Area) */
+            /* Reset Result Area backgrounds and colors */
             #resultArea {
                 background: white !important;
-                background-image: none !important;
                 color: black !important;
-                min-height: auto !important;
-                border: 1px solid #ccc !important;
-                border-radius: 10px !important;
-                padding: 20px !important;
+                border: none !important;
+                padding: 10px 0 !important;
             }
 
-            /* Override text colors in Result Area */
+            #resultArea>div.absolute {
+                display: none !important;
+            }
+
             #resultArea .text-white,
             #resultArea .text-white\/90,
             #resultArea .text-white\/80 {
@@ -155,62 +156,62 @@
                 color: black !important;
             }
 
-            /* Fix badges/pill backgrounds if needed, or keep color for emphasis but ensure text is readable */
-
-            /* Detailed Analysis Area */
-            #genAnalysisArea {
-                margin-top: 20px !important;
+            /* Detailed Analysis Reset */
+            #genAnalysisArea div,
+            #genAnalysisArea p,
+            #genAnalysisArea h3,
+            #genAnalysisArea h4,
+            #genAnalysisArea h5 {
+                color: black !important;
             }
 
             .bg-stone-950,
-            .bg-stone-900,
-            .bg-stone-900\/50,
-            .bg-gradient-to-br {
+            .bg-stone-900 {
                 background: white !important;
-                background-image: none !important;
-                border: 1px solid #ddd !important;
-                color: black !important;
+                border: 1px solid #eee !important;
             }
 
-            .text-stone-300,
-            .text-stone-400,
-            .text-stone-500 {
-                color: black !important;
+            /* Text Alignment & Link Fixes */
+            #lifestyleTip,
+            .max-w-lg.mx-auto * {
+                text-align: left !important;
+                margin-left: 0 !important;
             }
 
-            .text-stone-100 {
-                color: black !important;
+            #tea1Link,
+            #tea2Link,
+            #toolLink {
+                display: none !important;
             }
 
-            /* Force specific elements to be visible/highlighted correctly in print */
+            /* Header Summary Styling */
+            #printSummary {
+                margin-bottom: 1rem !important;
+                border-bottom: 2px solid #000 !important;
+                padding-bottom: 10px !important;
+            }
+
+            /* Global Text Contrast */
             .text-amber-400,
             .text-amber-500,
             .text-amber-700 {
-                color: #d97706 !important;
+                color: #b45309 !important;
             }
 
-            /* Make amber readable */
-
-            /* Link styling for print - hide URLs if messy or keep simple */
-            a {
-                text-decoration: underline;
-                color: black !important;
+            * {
+                text-shadow: none !important;
+                box-shadow: none !important;
             }
 
-            #printSummary {
-                margin-bottom: 2rem !important;
-                border-bottom: 2px solid #000 !important;
+            /* Compress spacing to fit more on Page 1 */
+            .space-y-6>div,
+            .space-y-8>div {
+                margin-top: 8px !important;
+                margin-bottom: 8px !important;
             }
 
-            /* Reduce gaps */
-            .py-24,
-            .py-20,
-            .pb-20,
-            .mt-8,
-            .mr-12 {
-                padding-top: 10px !important;
-                padding-bottom: 10px !important;
-                margin-top: 10px !important;
+            p.leading-relaxed {
+                line-height: 1.4 !important;
             }
         }
     </style>
